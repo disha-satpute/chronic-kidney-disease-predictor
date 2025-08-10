@@ -1,0 +1,10 @@
+pandas
+numpy
+scikit-learn
+Keras
+tensorflow
+matplotlib
+seaborn
+missingno
+imbalanced-learn
+Flask

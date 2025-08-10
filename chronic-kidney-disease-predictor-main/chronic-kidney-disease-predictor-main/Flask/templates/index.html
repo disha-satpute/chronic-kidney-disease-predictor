@@ -1,0 +1,856 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chronic Kidney Disease Predictor</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #0066ff;
+            --primary-dark: #0052cc;
+            --primary-light: #e6f2ff;
+            --secondary: #6366f1;
+            --danger: #ef4444;
+            --success: #10b981;
+            --warning: #f59e0b;
+            --background: #fafbfc;
+            --surface: #ffffff;
+            --surface-hover: #f8fafc;
+            --border: #e2e8f0;
+            --text-primary: #1e293b;
+            --text-secondary: #64748b;
+            --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.05);
+            --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
+            --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
+            --gradient-primary: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            --gradient-success: linear-gradient(135deg, #10b981 0%, #059669 100%);
+            --gradient-warning: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
+            --gradient-danger: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
+        }
+        
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+        
+        body {
+            font-family: 'Inter', sans-serif;
+            background: var(--background);
+            color: var(--text-primary);
+            line-height: 1.6;
+            min-height: 100vh;
+        }
+
+        .hero-section {
+            background: var(--gradient-primary);
+            padding: 60px 0;
+            text-align: center;
+            color: white;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .hero-section::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ffffff' fill-opacity='0.1'%3E%3Ccircle cx='30' cy='30' r='2'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E") repeat;
+        }
+
+        .hero-content {
+            position: relative;
+            z-index: 1;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+
+        .hero-title {
+            font-size: clamp(2.5rem, 5vw, 3.5rem);
+            font-weight: 700;
+            margin-bottom: 16px;
+            letter-spacing: -0.02em;
+        }
+
+        .hero-subtitle {
+            font-size: 1.25rem;
+            opacity: 0.9;
+            font-weight: 400;
+        }
+        
+        .container {
+            width: 90%;
+            max-width: 1400px;
+            margin: -40px auto 60px;
+            position: relative;
+            z-index: 2;
+        }
+
+        .main-card {
+            background: var(--surface);
+            border-radius: 20px;
+            box-shadow: var(--shadow-lg);
+            overflow: hidden;
+            border: 1px solid var(--border);
+        }
+
+        .form-header {
+            padding: 40px;
+            background: linear-gradient(to right, var(--surface), var(--primary-light));
+            border-bottom: 1px solid var(--border);
+        }
+
+        .form-title {
+            font-size: 1.75rem;
+            font-weight: 600;
+            color: var(--text-primary);
+            margin-bottom: 8px;
+        }
+
+        .form-description {
+            color: var(--text-secondary);
+            font-size: 1rem;
+        }
+        
+        .form-container {
+            padding: 40px;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+            gap: 24px;
+        }
+        
+        .form-section {
+            background: var(--surface-hover);
+            padding: 24px;
+            border-radius: 12px;
+            border: 1px solid var(--border);
+            transition: all 0.3s ease;
+        }
+
+        .form-section:hover {
+            box-shadow: var(--shadow-md);
+            border-color: var(--primary);
+        }
+
+        .section-title {
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: var(--text-primary);
+            margin-bottom: 16px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .section-icon {
+            width: 20px;
+            height: 20px;
+            background: var(--primary);
+            border-radius: 4px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 12px;
+        }
+        
+        .form-group {
+            margin-bottom: 20px;
+        }
+        
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 500;
+            color: var(--text-primary);
+            font-size: 0.9rem;
+            position: relative;
+        }
+
+        .required {
+            color: var(--danger);
+            margin-left: 4px;
+        }
+        
+        input, select {
+            width: 100%;
+            padding: 14px 16px;
+            border: 2px solid var(--border);
+            border-radius: 10px;
+            font-family: 'Inter', sans-serif;
+            font-size: 0.95rem;
+            transition: all 0.3s ease;
+            background: white;
+        }
+        
+        input:focus, select:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 4px rgba(0, 102, 255, 0.1);
+            transform: translateY(-1px);
+        }
+
+        input:hover, select:hover {
+            border-color: var(--primary);
+        }
+
+        select {
+            cursor: pointer;
+        }
+        
+        .btn-container {
+            grid-column: 1 / -1;
+            text-align: center;
+            margin-top: 32px;
+            padding-top: 32px;
+            border-top: 2px solid var(--border);
+        }
+        
+        .btn {
+            padding: 16px 48px;
+            background: var(--gradient-primary);
+            color: white;
+            border: none;
+            border-radius: 12px;
+            cursor: pointer;
+            font-size: 1.1rem;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            box-shadow: var(--shadow-md);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .btn::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+            transition: left 0.5s;
+        }
+
+        .btn:hover::before {
+            left: 100%;
+        }
+        
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-lg);
+        }
+        
+        .btn:active {
+            transform: translateY(0);
+        }
+
+        .btn:disabled {
+            opacity: 0.7;
+            cursor: not-allowed;
+            transform: none;
+        }
+        
+        .result-container {
+            margin-top: 40px;
+            padding: 40px;
+            background: var(--surface);
+            border-radius: 16px;
+            box-shadow: var(--shadow-lg);
+            border: 1px solid var(--border);
+            display: none;
+            animation: slideIn 0.5s ease-out;
+        }
+
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        .result-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 32px;
+        }
+        
+        .result-title {
+            color: var(--text-primary);
+            font-size: 1.75rem;
+            font-weight: 600;
+        }
+
+        .result-badge {
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-size: 0.875rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.025em;
+        }
+        
+        .probability-display {
+            text-align: center;
+            margin: 32px 0;
+        }
+
+        .probability-value {
+            font-size: 4rem;
+            font-weight: 700;
+            margin-bottom: 16px;
+            background: var(--gradient-primary);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .probability-label {
+            font-size: 1.1rem;
+            color: var(--text-secondary);
+            font-weight: 500;
+        }
+        
+        .probability-meter {
+            margin: 40px 0;
+        }
+        
+        .meter-labels {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 12px;
+            font-size: 0.875rem;
+            font-weight: 500;
+            color: var(--text-secondary);
+        }
+        
+        .meter-container {
+            height: 12px;
+            background: var(--border);
+            border-radius: 6px;
+            overflow: hidden;
+            position: relative;
+        }
+        
+        .meter-fill {
+            height: 100%;
+            border-radius: 6px;
+            transition: width 1s ease;
+            position: relative;
+        }
+
+        .meter-fill::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(90deg, transparent 0%, rgba(255,255,255,0.3) 50%, transparent 100%);
+            animation: shimmer 2s infinite;
+        }
+
+        @keyframes shimmer {
+            0% { transform: translateX(-100%); }
+            100% { transform: translateX(100%); }
+        }
+        
+        .interpretation {
+            padding: 24px;
+            border-radius: 12px;
+            text-align: center;
+            font-weight: 500;
+            font-size: 1.1rem;
+            border: 2px solid;
+        }
+        
+        .risk-low {
+            background: linear-gradient(135deg, rgba(16, 185, 129, 0.1), rgba(5, 150, 105, 0.05));
+            color: var(--success);
+            border-color: rgba(16, 185, 129, 0.2);
+        }
+        
+        .risk-medium {
+            background: linear-gradient(135deg, rgba(245, 158, 11, 0.1), rgba(217, 119, 6, 0.05));
+            color: var(--warning);
+            border-color: rgba(245, 158, 11, 0.2);
+        }
+        
+        .risk-high {
+            background: linear-gradient(135deg, rgba(239, 68, 68, 0.1), rgba(220, 38, 38, 0.05));
+            color: var(--danger);
+            border-color: rgba(239, 68, 68, 0.2);
+        }
+
+        .loading-spinner {
+            display: none;
+            width: 24px;
+            height: 24px;
+            border: 3px solid rgba(255,255,255,0.3);
+            border-top: 3px solid white;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin-left: 12px;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        
+        @media (max-width: 768px) {
+            .hero-section {
+                padding: 40px 0;
+            }
+
+            .container {
+                width: 95%;
+                margin-top: -30px;
+            }
+            
+            .form-container {
+                grid-template-columns: 1fr;
+                padding: 24px;
+                gap: 20px;
+            }
+
+            .form-section {
+                padding: 20px;
+            }
+
+            .hero-title {
+                font-size: 2.5rem;
+            }
+
+            .probability-value {
+                font-size: 3rem;
+            }
+        }
+
+        .tooltip {
+            position: relative;
+            cursor: help;
+        }
+
+        .tooltip::after {
+            content: attr(data-tooltip);
+            position: absolute;
+            bottom: 100%;
+            left: 50%;
+            transform: translateX(-50%);
+            background: var(--text-primary);
+            color: white;
+            padding: 8px 12px;
+            border-radius: 6px;
+            font-size: 0.8rem;
+            white-space: nowrap;
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.3s ease;
+            z-index: 1000;
+        }
+
+        .tooltip:hover::after {
+            opacity: 1;
+            visibility: visible;
+        }
+    </style>
+</head>
+<body>
+    <div class="hero-section">
+        <div class="hero-content">
+            <h1 class="hero-title">CKD Risk Predictor</h1>
+            <p class="hero-subtitle">Advanced AI-powered assessment for chronic kidney disease risk evaluation</p>
+        </div>
+    </div>
+
+    <div class="container">
+        <div class="main-card">
+            <div class="form-header">
+                <h2 class="form-title">Patient Assessment Form</h2>
+                <p class="form-description">Complete all required fields for accurate risk assessment</p>
+            </div>
+
+            <form action="/predict" method="post" class="form-container" id="predictionForm">
+                <div class="form-section">
+                    <h3 class="section-title">
+                        <span class="section-icon">👤</span>
+                        Basic Information
+                    </h3>
+                    <div class="form-group">
+                        <label for="age">Age <span class="required">*</span></label>
+                        <input type="number" id="age" name="age" placeholder="e.g., 50" min="1" max="120" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="bp" class="tooltip" data-tooltip="Diastolic blood pressure">Blood Pressure (mm/Hg) <span class="required">*</span></label>
+                        <input type="number" id="bp" name="bp" placeholder="e.g., 80" min="40" max="200" required>
+                    </div>
+                </div>
+
+                <div class="form-section">
+                    <h3 class="section-title">
+                        <span class="section-icon">🧪</span>
+                        Urine Analysis
+                    </h3>
+                    <div class="form-group">
+                        <label for="sg" class="tooltip" data-tooltip="Specific gravity of urine">Specific Gravity <span class="required">*</span></label>
+                        <select id="sg" name="sg" required>
+                            <option value="" disabled selected>Select value</option>
+                            <option value="1.005">1.005</option>
+                            <option value="1.010">1.010</option>
+                            <option value="1.015">1.015</option>
+                            <option value="1.020">1.020</option>
+                            <option value="1.025">1.025</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="al">Albumin <span class="required">*</span></label>
+                        <select id="al" name="al" required>
+                            <option value="" disabled selected>Select value</option>
+                            <option value="0">0</option>
+                            <option value="1">1</option>
+                            <option value="2">2</option>
+                            <option value="3">3</option>
+                            <option value="4">4</option>
+                            <option value="5">5</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="su">Sugar <span class="required">*</span></label>
+                        <select id="su" name="su" required>
+                            <option value="" disabled selected>Select value</option>
+                            <option value="0">0</option>
+                            <option value="1">1</option>
+                            <option value="2">2</option>
+                            <option value="3">3</option>
+                            <option value="4">4</option>
+                            <option value="5">5</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="form-section">
+                    <h3 class="section-title">
+                        <span class="section-icon">🔬</span>
+                        Cell Analysis
+                    </h3>
+                    <div class="form-group">
+                        <label for="rbc">Red Blood Cells <span class="required">*</span></label>
+                        <select id="rbc" name="rbc" required>
+                            <option value="" disabled selected>Select value</option>
+                            <option value="1">Normal</option>
+                            <option value="0">Abnormal</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="pc">Pus Cell <span class="required">*</span></label>
+                        <select id="pc" name="pc" required>
+                            <option value="" disabled selected>Select value</option>
+                            <option value="1">Normal</option>
+                            <option value="0">Abnormal</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="pcc">Pus Cell Clumps <span class="required">*</span></label>
+                        <select id="pcc" name="pcc" required>
+                            <option value="" disabled selected>Select value</option>
+                            <option value="0">Not Present</option>
+                            <option value="1">Present</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="ba">Bacteria <span class="required">*</span></label>
+                        <select id="ba" name="ba" required>
+                            <option value="" disabled selected>Select value</option>
+                            <option value="0">Not Present</option>
+                            <option value="1">Present</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="form-section">
+                    <h3 class="section-title">
+                        <span class="section-icon">🩸</span>
+                        Blood Chemistry
+                    </h3>
+                    <div class="form-group">
+                        <label for="bgr">Blood Glucose Random (mgs/dl) <span class="required">*</span></label>
+                        <input type="number" id="bgr" name="bgr" placeholder="e.g., 140" min="20" max="500" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="bu">Blood Urea (mgs/dl) <span class="required">*</span></label>
+                        <input type="number" id="bu" name="bu" placeholder="e.g., 50" min="5" max="200" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="sc" class="tooltip" data-tooltip="Key indicator of kidney function">Serum Creatinine (mgs/dl) <span class="required">*</span></label>
+                        <input type="number" id="sc" name="sc" placeholder="e.g., 1.2" step="0.1" min="0.1" max="20" required>
+                    </div>
+                </div>
+
+                <div class="form-section">
+                    <h3 class="section-title">
+                        <span class="section-icon">⚖️</span>
+                        Electrolytes
+                    </h3>
+                    <div class="form-group">
+                        <label for="sod">Sodium (mEq/L) <span class="required">*</span></label>
+                        <input type="number" id="sod" name="sod" placeholder="e.g., 140" min="100" max="200" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="pot">Potassium (mEq/L) <span class="required">*</span></label>
+                        <input type="number" id="pot" name="pot" placeholder="e.g., 4.5" step="0.1" min="1" max="10" required>
+                    </div>
+                </div>
+
+                <div class="form-section">
+                    <h3 class="section-title">
+                        <span class="section-icon">🫁</span>
+                        Blood Count
+                    </h3>
+                    <div class="form-group">
+                        <label for="hemo">Hemoglobin (gms) <span class="required">*</span></label>
+                        <input type="number" id="hemo" name="hemo" placeholder="e.g., 15" step="0.1" min="1" max="25" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="pcv">Packed Cell Volume <span class="required">*</span></label>
+                        <input type="number" id="pcv" name="pcv" placeholder="e.g., 44" min="10" max="70" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="wc">White Blood Cell Count (cells/cumm) <span class="required">*</span></label>
+                        <input type="number" id="wc" name="wc" placeholder="e.g., 7500" min="1000" max="30000" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="rc">Red Blood Cell Count (millions/cmm) <span class="required">*</span></label>
+                        <input type="number" id="rc" name="rc" placeholder="e.g., 5.2" step="0.1" min="1" max="10" required>
+                    </div>
+                </div>
+
+                <div class="form-section">
+                    <h3 class="section-title">
+                        <span class="section-icon">💊</span>
+                        Medical History
+                    </h3>
+                    <div class="form-group">
+                        <label for="htn">Hypertension <span class="required">*</span></label>
+                        <select id="htn" name="htn" required>
+                            <option value="" disabled selected>Select value</option>
+                            <option value="0">No</option>
+                            <option value="1">Yes</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="dm">Diabetes Mellitus <span class="required">*</span></label>
+                        <select id="dm" name="dm" required>
+                            <option value="" disabled selected>Select value</option>
+                            <option value="0">No</option>
+                            <option value="1">Yes</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="cad">Coronary Artery Disease <span class="required">*</span></label>
+                        <select id="cad" name="cad" required>
+                            <option value="" disabled selected>Select value</option>
+                            <option value="0">No</option>
+                            <option value="1">Yes</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="form-section">
+                    <h3 class="section-title">
+                        <span class="section-icon">🏥</span>
+                        Clinical Symptoms
+                    </h3>
+                    <div class="form-group">
+                        <label for="appet">Appetite <span class="required">*</span></label>
+                        <select id="appet" name="appet" required>
+                            <option value="" disabled selected>Select value</option>
+                            <option value="1">Good</option>
+                            <option value="0">Poor</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="pe">Pedal Edema <span class="required">*</span></label>
+                        <select id="pe" name="pe" required>
+                            <option value="" disabled selected>Select value</option>
+                            <option value="0">No</option>
+                            <option value="1">Yes</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="ane">Anemia <span class="required">*</span></label>
+                        <select id="ane" name="ane" required>
+                            <option value="" disabled selected>Select value</option>
+                            <option value="0">No</option>
+                            <option value="1">Yes</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="btn-container">
+                    <button type="submit" class="btn" id="submitBtn">
+                        Assess Kidney Disease Risk
+                        <div class="loading-spinner" id="loadingSpinner"></div>
+                    </button>
+                </div>
+            </form>
+        </div>
+
+        <div class="result-container" id="resultContainer">
+            <div class="result-header">
+                <h2 class="result-title">Risk Assessment Results</h2>
+                <div class="result-badge" id="resultBadge"></div>
+            </div>
+            
+            <div class="probability-display">
+                <div class="probability-value" id="probabilityValue">0%</div>
+                <div class="probability-label">Chronic Kidney Disease Risk</div>
+            </div>
+            
+            <div class="probability-meter">
+                <div class="meter-labels">
+                    <span>Low Risk (0-30%)</span>
+                    <span>Moderate Risk (30-70%)</span>
+                    <span>High Risk (70-100%)</span>
+                </div>
+                <div class="meter-container">
+                    <div class="meter-fill" id="meterFill"></div>
+                </div>
+            </div>
+            
+            <div class="interpretation" id="interpretation">
+                <!-- Interpretation text will be inserted here -->
+            </div>
+        </div>
+    </div>
+
+    <script>
+        document.getElementById('predictionForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            const submitBtn = document.getElementById('submitBtn');
+            const loadingSpinner = document.getElementById('loadingSpinner');
+            
+            // Show loading state
+            submitBtn.disabled = true;
+            loadingSpinner.style.display = 'inline-block';
+            submitBtn.textContent = 'Analyzing...';
+            
+            // Simulate API call
+            setTimeout(function() {
+                // Reset button state
+                submitBtn.disabled = false;
+                loadingSpinner.style.display = 'none';
+                submitBtn.textContent = 'Assess Kidney Disease Risk';
+                
+                // Generate random probability for demo
+                const probability = Math.floor(Math.random() * 100);
+                const hasDisease = probability > 50;
+                
+                displayResults(probability, hasDisease);
+            }, 2000);
+        });
+        
+        function displayResults(probability, hasDisease) {
+            const resultContainer = document.getElementById('resultContainer');
+            const probabilityValue = document.getElementById('probabilityValue');
+            const meterFill = document.getElementById('meterFill');
+            const interpretation = document.getElementById('interpretation');
+            const resultBadge = document.getElementById('resultBadge');
+            
+            // Update values
+            probabilityValue.textContent = probability + '%';
+            meterFill.style.width = probability + '%';
+            
+            // Set color and interpretation based on risk level
+            if (probability < 30) {
+                meterFill.style.background = 'var(--gradient-success)';
+                interpretation.className = 'interpretation risk-low';
+                interpretation.innerHTML = '<strong>Low Risk</strong><br>The assessment indicates a low probability of chronic kidney disease. Continue regular health monitoring and maintain healthy lifestyle practices.';
+                resultBadge.textContent = 'Low Risk';
+                resultBadge.style.background = 'var(--gradient-success)';
+                resultBadge.style.color = 'white';
+            } else if (probability < 70) {
+                meterFill.style.background = 'var(--gradient-warning)';
+                interpretation.className = 'interpretation risk-medium';
+                interpretation.innerHTML = '<strong>Moderate Risk</strong><br>The assessment shows moderate risk for chronic kidney disease. We recommend consulting with a healthcare provider for further evaluation and monitoring.';
+                resultBadge.textContent = 'Moderate Risk';
+                resultBadge.style.background = 'var(--gradient-warning)';
+                resultBadge.style.color = 'white';
+            } else {
+                meterFill.style.background = 'var(--gradient-danger)';
+                interpretation.className = 'interpretation risk-high';
+                interpretation.innerHTML = '<strong>High Risk</strong><br>The assessment indicates a high probability of chronic kidney disease. <strong>Please seek immediate medical attention</strong> from a nephrologist or healthcare provider.';
+                resultBadge.textContent = 'High Risk';
+                resultBadge.style.background = 'var(--gradient-danger)';
+                resultBadge.style.color = 'white';
+            }
+            
+            // Show results with animation
+            resultContainer.style.display = 'block';
+            
+            // Animate the meter fill
+            setTimeout(() => {
+                meterFill.style.width = probability + '%';
+            }, 100);
+            
+            // Scroll to results
+            setTimeout(() => {
+                resultContainer.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            }, 300);
+        }
+
+        // Form validation enhancements
+        const inputs = document.querySelectorAll('input[required], select[required]');
+        inputs.forEach(input => {
+            input.addEventListener('blur', validateField);
+            input.addEventListener('input', clearValidation);
+        });
+
+        function validateField(e) {
+            const field = e.target;
+            if (!field.value) {
+                field.style.borderColor = 'var(--danger)';
+                field.style.boxShadow = '0 0 0 4px rgba(239, 68, 68, 0.1)';
+            }
+        }
+
+        function clearValidation(e) {
+            const field = e.target;
+            field.style.borderColor = 'var(--border)';
+            field.style.boxShadow = 'none';
+        }
+
+        // Check if prediction results are available from server
+        if (typeof prediction_probability !== 'undefined') {
+            window.addEventListener('DOMContentLoaded', function() {
+                displayResults(prediction_probability * 100, prediction_text === 'Chronic Kidney Disease');
+            });
+        }
+
+        // Progress indicator
+        function updateProgress() {
+            const requiredFields = document.querySelectorAll('input[required], select[required]');
+            const completedFields = Array.from(requiredFields).filter(field => field.value !== '').length;
+            const progress = (completedFields / requiredFields.length) * 100;
+            
+            // You could add a progress bar here if desired
+        }
+
+        // Add input listeners for progress tracking
+        inputs.forEach(input => {
+            input.addEventListener('input', updateProgress);
+        });
+    </script>
+</body>
+</html>
